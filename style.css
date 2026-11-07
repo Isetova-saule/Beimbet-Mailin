@@ -123,14 +123,15 @@
 /* Kulpash literary film and simplified tasks, 2026 edition */
 .quiz-layout.quiz-single{display:block;max-width:950px;margin:0 auto}
 .quiz-single .quiz-main{padding:clamp(22px,3vw,38px);background:linear-gradient(145deg,#1e2727,#111a1d);box-shadow:0 16px 50px #0003}
-.film-banner{--banner:url('assets/work_kulpash.webp');background-position:center 45%;}
+.film-banner{--banner:url('work_kulpash.webp');background-position:center 45%;}
 .film-topline{display:flex;justify-content:space-between;align-items:end;gap:28px;margin:0 0 24px;padding-bottom:20px;border-bottom:1px solid var(--border)}
 .film-topline h2{font:clamp(30px,3.4vw,45px) Georgia,serif;color:#fff0cc;margin:8px 0 0}
 .film-topline p{max-width:380px;color:#cfc6b4;line-height:1.65;font-size:14px;margin:0}
 .film-layout{display:grid;grid-template-columns:minmax(0,1.52fr) minmax(290px,.72fr);gap:23px;align-items:stretch}
 .film-player-card,.film-info-card{background:linear-gradient(155deg,#172224,#221e1a);border:1px solid #b99460a0;border-radius:15px;overflow:hidden;box-shadow:0 20px 50px #0005}
-.film-screen{position:relative;aspect-ratio:16/9;background:#0d161a;isolation:isolate;overflow:hidden}
-.film-screen video{width:100%;height:100%;display:block;object-fit:contain;background:#0b1012}
+.film-screen{position:relative;aspect-ratio:16/9;min-height:200px;background:#0d161a;isolation:isolate;overflow:hidden}
+.film-screen iframe,.film-screen video{position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b1012}
+.film-screen video{object-fit:contain}
 .film-overlay{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:13px;padding:20px;background:linear-gradient(0deg,#071313e8,#0c1718a8 45%,#07131390);color:#fff0ce}
 .film-overlay:before{content:'';inset:0;position:absolute;z-index:-1;background:url('work_kulpash.webp') center/cover;opacity:.14}
 .film-circle{width:78px;height:78px;display:grid;place-items:center;border:2px solid #ffd891;border-radius:50%;font-size:28px;padding-left:5px;box-shadow:0 0 32px #f7c26c81,inset 0 0 18px #f7c26c4b;color:#ffe0a2}

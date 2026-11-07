@@ -6,9 +6,9 @@ const modal=$('#modalBack'),modalContent=$('#modalBody'),modalClose=$('#modalClo
 function showModal(markup){if(!modal)return;lastFocus=document.activeElement;modalContent.innerHTML=markup;modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';modalClose.focus()}
 function closeModal(){if(!modal)return;modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';lastFocus?.focus?.()}
 if(modalClose){modalClose.addEventListener('click',closeModal);modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()})}
-if($('#timelineButtons')){function renderTime(i){$('#timelineButtons').innerHTML=data.milestones.map((m,j)=>`<button type="button" class="timebtn ${i===j?'active':''}" data-time="${j}" aria-pressed="${i===j}"><strong>${m[0]}</strong><small>${m[3]}</small></button>`).join('');let m=data.milestones[i];$('#timelineDetail').innerHTML=`<span class="stamp">${m[0]} · ${i+1}/8</span><h3>${m[1]}</h3><p>${m[2]}</p>`;const panel=document.querySelector('.image-panel img'); const label=document.querySelector('.image-panel .image-label'); if(panel && m[4]){panel.src='assets/'+m[4]; panel.alt=m[1]+' кезеңіне арналған көркем иллюстрация';} if(label){label.textContent=m[5]||'ӨМІР ШЕЖІРЕСІ';}$$('[data-time]').forEach(b=>b.addEventListener('click',()=>renderTime(+b.dataset.time)))}renderTime(0)}
+if($('#timelineButtons')){function renderTime(i){$('#timelineButtons').innerHTML=data.milestones.map((m,j)=>`<button type="button" class="timebtn ${i===j?'active':''}" data-time="${j}" aria-pressed="${i===j}"><strong>${m[0]}</strong><small>${m[3]}</small></button>`).join('');let m=data.milestones[i];$('#timelineDetail').innerHTML=`<span class="stamp">${m[0]} · ${i+1}/8</span><h3>${m[1]}</h3><p>${m[2]}</p>`;const panel=document.querySelector('.image-panel img'); const label=document.querySelector('.image-panel .image-label'); if(panel && m[4]){panel.src=''+m[4]; panel.alt=m[1]+' кезеңіне арналған көркем иллюстрация';} if(label){label.textContent=m[5]||'ӨМІР ШЕЖІРЕСІ';}$$('[data-time]').forEach(b=>b.addEventListener('click',()=>renderTime(+b.dataset.time)))}renderTime(0)}
 if($('#worksGrid')){
-  function artSrc(w){return w[6]?'assets/'+w[6]:'assets/chapter_'+(w[5]+1)+'.webp'}
+  function artSrc(w){return w[6]?''+w[6]:'chapter_'+(w[5]+1)+'.webp'}
   function renderWorks(genre='Барлығы'){
     $('#worksGrid').innerHTML=data.works.map((w,i)=>({w,i})).filter(o=>genre==='Барлығы'||o.w[1]===genre).map(({w,i})=>{
       const intro=`<div class="work-image"><img loading="lazy" src="${artSrc(w)}" alt="«${w[0]}» туындысына арналған көркем иллюстрация"></div><div class="work-info"><span class="chip">${w[2]} · ${w[1]}</span><h3>${w[0]}</h3><p>${w[3]}</p><strong>${w[7]?'Кітап бетін ашу →':'Толығырақ оқу ↗'}</strong></div>`;
@@ -32,31 +32,43 @@ function drawQuiz(){if(!$('#quiz'))return;if(qi===qs.length){$('#quiz').innerHTM
 
 
 
-// «Күлпаш»: offline-friendly film slot. If media/kulpash.mp4 is installed,
-// the browser plays it from the site. Selecting a local video previews it for this visit.
+// «Күлпаш»: play the YouTube film or preview a local video for this visit.
 (()=>{
   const video=document.getElementById('kulpashVideo');
   const input=document.getElementById('kulpashVideoFile');
   const screen=document.getElementById('filmScreen');
   const status=document.getElementById('filmStatus');
   if(!video||!input||!screen)return;
-  let currentObjectUrl=null;
-  const ready=()=>{
-    screen.classList.add('has-video');video.setAttribute('controls','controls');
+  const embed=document.getElementById('kulpashEmbed');
+  const youtubeId=screen.dataset.youtubeId;
+  let player;
+  if(embed && /^[\w-]{11}$/.test(youtubeId)){
+    player=embed.content.firstElementChild.cloneNode(true);
+    player.src=`https://www.youtube-nocookie.com/embed/${youtubeId}?playsinline=1`;
+    screen.prepend(player);
+    screen.classList.add('has-video');
     status.textContent='Бейнероликті ойнатуға болады';
-  };
-  video.addEventListener('loadedmetadata',ready);
+  }
+  let currentObjectUrl=null;
+  video.addEventListener('loadedmetadata',()=>{
+    status.textContent='Бейнероликті ойнатуға болады';
+  });
   video.addEventListener('error',()=>{
-    if(!screen.classList.contains('has-video'))status.textContent='Бейнероликті таңдап, осы беттен көре аласыз';
+    status.textContent='Бұл бейне ойнатылмады. Басқа файл таңдаңыз.';
   });
   input.addEventListener('change',()=>{
     const file=input.files?.[0];if(!file)return;
     if(!(file.type.startsWith('video/')||/\.(mp4|webm|mov|m4v)$/i.test(file.name))){status.textContent='Бейне файл таңдалмады';return;}
     if(currentObjectUrl)URL.revokeObjectURL(currentObjectUrl);
     currentObjectUrl=URL.createObjectURL(file);
-    video.pause();video.removeAttribute('poster');
+    player?.remove();
+    screen.classList.add('has-video');
+    video.hidden=false;
+    video.removeAttribute('poster');
     video.src=currentObjectUrl; video.load();
     status.textContent=file.name;
   });
-  window.addEventListener('pagehide',()=>{if(currentObjectUrl)URL.revokeObjectURL(currentObjectUrl)});
+  window.addEventListener('pagehide',event=>{
+    if(!event.persisted && currentObjectUrl)URL.revokeObjectURL(currentObjectUrl);
+  });
 })();
